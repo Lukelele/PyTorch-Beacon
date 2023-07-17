@@ -6,22 +6,22 @@ from torch.utils.data import DataLoader
 NUM_WORKERS = os.cpu_count()
 
 
-def from_path(dataset_dir: str, batch_size: int, transform: transforms.Compose = transforms.ToTensor(), shuffle=True, dataset_type=datasets.ImageFolder, num_workers: int = NUM_WORKERS) -> DataLoader:
-    dataset = dataset_type(dataset_dir, transforms=transform)
+def from_path(dataset_dir: str, batch_size: int = 32, transform: transforms.Compose = transforms.ToTensor(), shuffle=True, dataset_type=datasets.ImageFolder, pin_memory=True):
+    dataset = dataset_type(dataset_dir, transform=transform)
     labels = dataset.classes
-    dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=shuffle, num_workers=num_workers, pin_memory=True)
+    dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=shuffle, pin_memory=pin_memory)
 
     return dataloader, labels
 
 
-def traintest_from_path(trainset_dir: str, testset_dir: str, batch_size: int, transform: transforms.Compose = transforms.ToTensor(), dataset_type=datasets.ImageFolder, num_workers: int = NUM_WORKERS) -> tuple(DataLoader, DataLoader):
-    if trainset.classes == testset.classes:
-        trainset = dataset_type(trainset_dir, transforms=transform)
-        testset = dataset_type(testset_dir, transforms=transform)
-        labels = trainset.classes
+def traintest_from_path(trainset_dir: str, testset_dir: str, batch_size: int = 32, transform: transforms.Compose = transforms.ToTensor(), dataset_type=datasets.ImageFolder, pin_memory=True):
+    trainset = dataset_type(trainset_dir, transform=transform)
+    testset = dataset_type(testset_dir, transform=transform)
+    labels = trainset.classes
 
-        trainloader = DataLoader(trainset, batch_size=batch_size, shuffle=True, num_workers=num_workers, pin_memory=True)
-        testloader = DataLoader(testset, batch_size=batch_size, shuffle=False, num_workers=num_workers, pin_memory=True)
+    if trainset.classes == testset.classes:
+        trainloader = DataLoader(trainset, batch_size=batch_size, shuffle=True, pin_memory=pin_memory)
+        testloader = DataLoader(testset, batch_size=batch_size, shuffle=False, pin_memory=pin_memory)
 
         return trainloader, testloader, labels
     else:
