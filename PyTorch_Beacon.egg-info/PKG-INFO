@@ -1,0 +1,9 @@
+Metadata-Version: 2.1
+Name: PyTorch-Beacon
+Version: 0.0.1
+Summary: A simple lightweight helper library for PyTorch
+Author-email: Luke Ye <lukelele2001@gmail.com>
+Project-URL: Homepage, https://github.com/Lukelele/PyTorch-Beacon
+Requires-Python: >=3.6
+Description-Content-Type: text/markdown
+License-File: LICENCE

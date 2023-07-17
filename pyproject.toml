@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools", "wheel", "torch"]
+
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "PyTorch-Beacon"
+version = "0.0.1"
+authors = [
+  { name="Luke Ye", email="lukelele2001@gmail.com" },
+]
+description = "A simple lightweight helper library for PyTorch"
+readme = "README.md"
+requires-python = ">=3.6"
+classifiers = []
+
+[project.urls]
+"Homepage" = "https://github.com/Lukelele/PyTorch-Beacon"

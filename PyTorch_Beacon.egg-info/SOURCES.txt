@@ -1,0 +1,12 @@
+LICENCE
+README.md
+pyproject.toml
+PyTorch_Beacon.egg-info/PKG-INFO
+PyTorch_Beacon.egg-info/SOURCES.txt
+PyTorch_Beacon.egg-info/dependency_links.txt
+PyTorch_Beacon.egg-info/top_level.txt
+beacon/__init__.py
+beacon/dataloading.py
+beacon/metrics.py
+beacon/training.py
+beacon/utils.py
