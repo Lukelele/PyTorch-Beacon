@@ -1,5 +1,5 @@
 pyproject.toml
-beacon/__pycache__
+beacon/__pycache__/
 beacon/__init__.py
-PyTorch_Beacon.egg-info
-dist
+PyTorch_Beacon.egg-info/
+dist/

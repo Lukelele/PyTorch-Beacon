@@ -1,6 +1,5 @@
 from pathlib import Path
 import torch
-from collections import OrderedDict
 
 
 def save_model(model: torch.nn.Module, save_directory: str, model_name: str):

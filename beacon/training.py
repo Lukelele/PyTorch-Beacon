@@ -13,9 +13,9 @@ def fit(model: torch.nn.Module, dataloader: torch.utils.data.DataLoader, loss_ty
     losses = np.zeros(epochs)
     accuracies = np.zeros(epochs)
 
-    for epoch in tqdm(range(epochs)):
-        model.train()
+    model.train()
 
+    for epoch in tqdm(range(epochs)):
         batch_loss = 0
         batch_accuracy = 0
         
@@ -56,7 +56,7 @@ def evaluate(model: torch.nn.Module, dataloader: torch.utils.data.DataLoader, lo
             x, y = x.to(device), y.to(device)
             y_pred = model(x)
             loss += loss_func(y_pred, y)
-            accuracy = accuracy_func(y_pred, y)
+            accuracy += accuracy_func(y_pred, y)
 
         loss /= len(dataloader)
         accuracy /= len(dataloader)
