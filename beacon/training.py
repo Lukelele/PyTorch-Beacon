@@ -62,3 +62,13 @@ def evaluate(model: torch.nn.Module, dataloader: torch.utils.data.DataLoader, lo
         accuracy /= len(dataloader)
 
     return loss.item(), accuracy.item()
+
+
+def predict(model: torch.nn.Module, inputs: torch.Tensor, device="cpu"):
+    model.to(device)
+    model.eval()
+
+    with torch.inference_mode():
+        y_pred = model(inputs.to(device))
+
+    return y_pred
