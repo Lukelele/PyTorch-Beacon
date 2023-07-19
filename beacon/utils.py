@@ -4,7 +4,7 @@ import torch
 from torchvision import transforms
 
 
-########################   Saving and Loading   ########################
+###########################   Saving and Loading   ###########################
 
 
 def save_model(model: torch.nn.Module, save_directory: str, model_name: str):
@@ -22,7 +22,7 @@ def load_model(model: torch.nn.Module, model_state_path: str):
     model.load_state_dict(model_state)
 
 
-######################   For Image Classification   ######################
+########################   For Image Classification   ########################
 
 
 def get_image_tensor_from_path(image_path: str):
@@ -53,7 +53,7 @@ def display_image_from_tensor(image_tensor: torch.Tensor):
     image.show()
 
 
-def classify(model: torch.nn.Module, image: torch.Tensor, labels: list, return_image=False, device="cpu"):
+def classify(model: torch.nn.Module, image: torch.Tensor, labels: list, device="cpu"):
     model.to(device)
     model.eval()
 
@@ -62,13 +62,14 @@ def classify(model: torch.nn.Module, image: torch.Tensor, labels: list, return_i
         y_prob = torch.softmax(y_pred, dim=1)
         y_pred = torch.argmax(y_prob, dim=1)
 
-    if return_image:
-        return labels[y_pred.item()], y_prob, get_image_from_tensor(image)
-    else:
-        return labels[y_pred.item()], y_prob
+    labels_list = torch.zeros(len(y_pred))
+        
+    for i, y in enumerate(y_pred):
+        labels_list[i] = labels[y.item()].item()
+    return labels_list, y_prob
 
 
-##########################   Misc   ##########################
+################################   Misc   ################################
 
 
 def dataloader_to_tensor(dataloader: torch.utils.data.DataLoader, batch_count: int = 0):
