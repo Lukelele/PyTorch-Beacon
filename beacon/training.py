@@ -4,7 +4,7 @@ import numpy as np
 from tqdm.auto import tqdm
 
 
-def fit(model: torch.nn.Module, dataloader: torch.utils.data.DataLoader, loss_type=torch.nn.MSELoss, optimiser=torch.optim.SGD, accuracy_func=metrics.categorical_accuracy, epochs=100, lr=0.01, device="cpu"):
+def fit(model: torch.nn.Module, dataloader: torch.utils.data.DataLoader, optimiser=torch.optim.Adam, loss_type=torch.nn.CrossEntropyLoss, accuracy_func=metrics.categorical_accuracy, epochs=100, lr=0.01, device="cpu"):
     model.to(device)
 
     loss_func = loss_type()
@@ -41,7 +41,7 @@ def fit(model: torch.nn.Module, dataloader: torch.utils.data.DataLoader, loss_ty
     return losses, accuracies
 
 
-def evaluate(model: torch.nn.Module, dataloader: torch.utils.data.DataLoader, loss_type=torch.nn.MSELoss, accuracy_func=metrics.categorical_accuracy, device="cpu"):
+def evaluate(model: torch.nn.Module, dataloader: torch.utils.data.DataLoader, loss_type=torch.nn.CrossEntropyLoss, accuracy_func=metrics.categorical_accuracy, device="cpu"):
     model.to(device)
     model.eval()
 
