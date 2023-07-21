@@ -3,9 +3,6 @@ from torchvision import datasets, transforms
 from torch.utils.data import DataLoader
 
 
-NUM_WORKERS = os.cpu_count()
-
-
 def from_path(dataset_dir: str, batch_size: int = 32, transform: transforms.Compose = transforms.ToTensor(), shuffle=True, dataset_type=datasets.ImageFolder, pin_memory=True):
     dataset = dataset_type(dataset_dir, transform=transform)
     labels = dataset.classes
