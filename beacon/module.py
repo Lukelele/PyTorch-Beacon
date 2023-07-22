@@ -3,15 +3,13 @@ from . import metrics
 
 
 class Module(torch.nn.Module):
-    def __init__(self, optimiser: torch.optim.Optimizer = torch.optim.Adam, learning_rate=0.1, loss_function=torch.nn.CrossEntropyLoss, accuracy_function=metrics.categorical_accuracy):
+    def __init__(self):
         super().__init__()
         
-        self.compile(optimiser, learning_rate, loss_function, accuracy_function)
         
-        
-    def compile(self,  optimiser: torch.optim.Optimizer = torch.optim.Adam, learning_rate=0.1, loss_function=torch.nn.CrossEntropyLoss, accuracy_function=metrics.categorical_accuracy):
+    def compile(self, optimiser: torch.optim.Optimizer = torch.optim.Adam, learning_rate=0.1, loss_function=torch.nn.CrossEntropyLoss, accuracy_function=metrics.categorical_accuracy):
         self.loss_function = loss_function()
-        self.optimiser = optimiser(self.layers.parameters(), learning_rate)
+        self.optimiser = optimiser(self.parameters(), learning_rate)
         self.learning_rate = learning_rate
         
         self.layers = torch.compile(self.layers)
