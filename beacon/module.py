@@ -1,13 +1,11 @@
 import numpy as np
 import torch
 from tqdm.auto import tqdm
-from collections import OrderedDict
-from typing import Iterator
 from . import metrics
 
 
 class Module(torch.nn.Module):
-    def __init__(self):
+    def __init__(self, torch_module: torch.nn.Module):
         super().__init__()
         
         
@@ -82,6 +80,25 @@ class Module(torch.nn.Module):
             accuracy /= len(dataloader)
 
         return loss.item(), accuracy.item()
+    
+    
+    def predict(self, inputs: torch.Tensor):
+        self.to(self.device)
+        self.eval()
+        
+        with torch.inference_mode():
+            y_pred = self(inputs.to(self.device))
+            
+        return y_pred
+    
+    
+    def save(self, root_directory: str, filename: str):
+        if filename.endswith(".pt") or filename.endswith(".pth"):
+            path = root_directory + filename
+            torch.save(self.state_dict(), path)
+        else:
+            path = root_directory + filename + ".pt"
+            torch.save(self.state_dict(), path)
 
 
 
