@@ -92,13 +92,15 @@ class Module(torch.nn.Module):
         return y_pred
     
     
-    def save(self, root_directory: str, filename: str):
-        if filename.endswith(".pt") or filename.endswith(".pth"):
-            path = root_directory + filename
-            torch.save(self.state_dict(), path)
+    def save(self, filepath: str):
+        if filepath.endswith(".pt") or filepath.endswith(".pth"):
+            torch.save(self.state_dict(), filepath)
         else:
-            path = root_directory + filename + ".pt"
-            torch.save(self.state_dict(), path)
+            torch.save(self.state_dict(), filepath + ".pt")
+            
+    
+    def load(self, filepath: str):
+        self.load_state_dict(torch.load(filepath))
 
 
 
