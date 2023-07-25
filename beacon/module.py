@@ -5,7 +5,7 @@ from . import metrics
 
 
 class Module(torch.nn.Module):
-    def __init__(self, torch_module: torch.nn.Module):
+    def __init__(self):
         super().__init__()
         
         
