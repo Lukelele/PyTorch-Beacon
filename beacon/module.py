@@ -5,11 +5,49 @@ from . import metrics
 
 
 class Module(torch.nn.Module):
+    """
+    A base class for creating neural network modules in PyTorch.
+    
+    Attributes:
+    -----------
+    loss_function: torch.nn.modules.loss._Loss
+        The loss function to be used during training.
+    optimiser: torch.optim.Optimizer
+        The optimizer to be used during training.
+    learning_rate: float
+        The learning rate to be used during training.
+    accuracy_function: function
+        The accuracy function to be used during training.
+    device: str
+        The device to be used for training.
+    
+    Methods:
+    --------
+    compile(optimiser: torch.optim.Optimizer=torch.optim.Adam, learning_rate=0.1, loss_function=torch.nn.CrossEntropyLoss, accuracy_function=metrics.categorical_accuracy, device: str = "cpu", optimisations=False):
+        Configures the module for training.
+        
+    fit(dataloader: torch.utils.data.DataLoader, epochs=10):
+        Trains the module on the given data.
+    """
     def __init__(self):
         super().__init__()
         
         
     def compile(self, optimiser: torch.optim.Optimizer=torch.optim.Adam, learning_rate=0.1, loss_function=torch.nn.CrossEntropyLoss, accuracy_function=metrics.categorical_accuracy, device: str = "cpu", optimisations=False):
+        """
+        Compiles the model with the specified optimizer, learning rate, loss function, accuracy function, device and optimisations.
+
+        Args:
+        - optimiser: The optimizer to use for training the model. Default is torch.optim.Adam.
+        - learning_rate: The learning rate to use for training the model. Default is 0.1.
+        - loss_function: The loss function to use for training the model. Default is torch.nn.CrossEntropyLoss.
+        - accuracy_function: The accuracy function to use for training the model. Default is metrics.categorical_accuracy.
+        - device: The device to use for training the model. Default is "cpu".
+        - optimisations: Whether to apply optimizations to the model. Default is False.
+
+        Returns:
+        - None
+        """
         self.loss_function = loss_function
         self.optimiser = optimiser
         self.learning_rate = learning_rate
@@ -21,6 +59,16 @@ class Module(torch.nn.Module):
             
             
     def fit(self, dataloader: torch.utils.data.DataLoader, epochs=10):
+        """
+        Trains the model on the specified dataloader for the specified number of epochs.
+
+        Args:
+        - dataloader: The dataloader to use for training the model.
+        - epochs: The number of epochs to train the model for. Default is 10.
+
+        Returns:
+        - None
+        """
         self.to(self.device)
         
         loss_function = self.loss_function()
@@ -59,6 +107,15 @@ class Module(torch.nn.Module):
 
 
     def evaluate(self, dataloader: torch.utils.data.DataLoader):
+        """
+        Evaluates the model on the specified dataloader.
+
+        Args:
+        - dataloader: The dataloader to use for evaluating the model.
+
+        Returns:
+        - Tuple of loss and accuracy.
+        """
         self.to(self.device)
         self.eval()
         
@@ -83,6 +140,15 @@ class Module(torch.nn.Module):
     
     
     def predict(self, inputs: torch.Tensor):
+        """
+        Predicts the output of the model for the given input tensor.
+
+        Args:
+        - inputs: The input tensor for which to predict the output.
+
+        Returns:
+        - The predicted output tensor.
+        """
         self.to(self.device)
         self.eval()
         
@@ -93,6 +159,15 @@ class Module(torch.nn.Module):
     
     
     def save(self, filepath: str):
+        """
+        Saves the state dictionary of the model to the specified file path.
+
+        Args:
+        - filepath: The file path to save the model state dictionary to. If the file path does not end with ".pt" or ".pth", ".pt" will be appended to the file path.
+
+        Returns:
+        - None
+        """
         if filepath.endswith(".pt") or filepath.endswith(".pth"):
             torch.save(self.state_dict(), filepath)
         else:
@@ -100,11 +175,28 @@ class Module(torch.nn.Module):
             
     
     def load(self, filepath: str):
+        """
+        Loads the state dictionary of the model from the specified file path.
+
+        Args:
+        - filepath: The file path to load the model state dictionary from.
+
+        Returns:
+        - None
+        """
         self.load_state_dict(torch.load(filepath))
 
 
 
 class Sequential(Module):
+    """
+    A sequential container for holding a sequence of modules.
+    Modules will be added to the container in the order they are passed as arguments.
+    The forward method will call each module in the sequence in the order they were added.
+    
+    Args:
+        *args: Variable length argument list of modules to be added to the container.
+    """
     def __init__(self, *args):
         super().__init__()
         
