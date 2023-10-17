@@ -1,5 +1,6 @@
 import os
 import pandas as pd
+import numpy as np
 from torchvision import datasets, transforms
 from torch.utils.data import DataLoader, Dataset
 
@@ -69,8 +70,10 @@ class DatasetFromDF(Dataset):
     Returns:
     - tuple: A tuple containing the features and labels.
     """
-    def __init__(self, dataframe, label_column=""):
+    def __init__(self, dataframe, label_column="", transform=None):
         self.dataframe = pd.DataFrame()
+        self.transform = transform
+
 
         if label_column != dataframe.columns[0]:
             if label_column == "":
@@ -88,8 +91,11 @@ class DatasetFromDF(Dataset):
             self.dataframe = dataframe
 
     def __getitem__(self, index):
-        row = self.dataframe.iloc[index].to_numpy()
-        features = row[1:]
+        row = self.dataframe.iloc[index].to_numpy().astype(np.float32)
+        if self.transform:
+            features = self.transform(row[1:])
+        else:
+            features = row[1:]
         label = row[0]
         return features, label
 
@@ -97,7 +103,7 @@ class DatasetFromDF(Dataset):
         return len(self.dataframe)
 
 
-def from_df(dataframe, label_column="", batch_size: int = 32, transform: transforms.Compose = transforms.ToTensor(), shuffle=True, pin_memory=True):
+def from_df(dataframe, label_column="", batch_size: int = 32, transform: transforms.Compose = None, shuffle=True, pin_memory=True):
     """
     Loads a dataset from a given pandas DataFrame and returns a DataLoader object and the labels of the dataset.
     The dataframe must contain one column for the labels and the rest of the columns for the features.
@@ -114,13 +120,13 @@ def from_df(dataframe, label_column="", batch_size: int = 32, transform: transfo
     - dataloader (torch.utils.data.DataLoader): The DataLoader object for the loaded dataset.
     - labels (list): The labels of the loaded dataset.
     """
-    dataset = DatasetFromDF(dataframe, label_column=label_column)
+    dataset = DatasetFromDF(dataframe, label_column=label_column, transform=transform)
     dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=shuffle, pin_memory=pin_memory)
 
     return dataloader
 
 
-def traintest_from_df(train_dataframe, test_dataframe, label_column="", batch_size: int = 32, transform: transforms.Compose = transforms.ToTensor(), pin_memory=True):
+def traintest_from_df(train_dataframe, test_dataframe, label_column="", batch_size: int = 32, transform: transforms.Compose = None, pin_memory=True):
     """
     Loads train and test datasets from given pandas DataFrames and returns DataLoader objects and the labels of the datasets.
 
@@ -137,13 +143,10 @@ def traintest_from_df(train_dataframe, test_dataframe, label_column="", batch_si
     - test_dataloader (torch.utils.data.DataLoader): The DataLoader object for the loaded test dataset.
     - labels (list): The labels of the loaded datasets.
     """
-    trainset = DatasetFromDF(train_dataframe, label_column=label_column)
-    testset = DatasetFromDF(test_dataframe, label_column=label_column)
+    trainset = DatasetFromDF(train_dataframe, label_column=label_column, transform=transform)
+    testset = DatasetFromDF(test_dataframe, label_column=label_column, transform=transform)
 
-    if trainset.classes == testset.classes:
-        trainloader = DataLoader(trainset, batch_size=batch_size, shuffle=True, pin_memory=pin_memory)
-        testloader = DataLoader(testset, batch_size=batch_size, shuffle=False, pin_memory=pin_memory)
 
-        return trainloader, testloader, trainset.classes
-    else:
-        print("Error: trainset and testset classes do not match")
+    trainloader = DataLoader(trainset, batch_size=batch_size, shuffle=True, pin_memory=pin_memory)
+    testloader = DataLoader(testset, batch_size=batch_size, shuffle=False, pin_memory=pin_memory)
+    return trainloader, testloader
