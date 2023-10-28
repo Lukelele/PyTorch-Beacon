@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "PyTorch-Beacon"
-version = "0.0.5"
+version = "0.0.7"
 authors = [
   { name="Luke Ye", email="lukelele2001@gmail.com" },
 ]
