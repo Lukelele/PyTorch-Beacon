@@ -1,6 +1,7 @@
 import os
 import pandas as pd
 import numpy as np
+import torch
 from torchvision import datasets, transforms
 from torch.utils.data import DataLoader, Dataset
 
@@ -74,7 +75,6 @@ class DatasetFromDF(Dataset):
         self.dataframe = pd.DataFrame()
         self.transform = transform
 
-
         if label_column != dataframe.columns[0]:
             if label_column == "":
                 self.dataframe["index"] = dataframe.index.values
@@ -90,14 +90,17 @@ class DatasetFromDF(Dataset):
         else:
             self.dataframe = dataframe
 
+
     def __getitem__(self, index):
-        row = self.dataframe.iloc[index].to_numpy().astype(np.float32)
+        row = self.dataframe.iloc[index].values
+
         if self.transform:
-            features = self.transform(row[1:])
+            features = self.transform(torch.tensor(row[1:], dtype=torch.float32))
         else:
-            features = row[1:]
-        label = row[0]
+            features = torch.tensor(row[1:], dtype=torch.float32)
+        label = torch.tensor(row[0], dtype=torch.long)
         return features, label
+
 
     def __len__(self):
         return len(self.dataframe)
