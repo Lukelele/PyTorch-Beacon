@@ -135,6 +135,7 @@ class Module(torch.nn.Module):
         - None
         """
         self.to(self.device)
+        x, y = x.to(self.device), y.to(self.device)
         
         loss_function = self.loss_function()
         optimiser = self.optimiser(self.parameters(), self.learning_rate)
@@ -168,6 +169,7 @@ class Module(torch.nn.Module):
         - Tuple of loss.
         """
         self.to(self.device)
+        x, y = x.to(self.device), y.to(self.device)
         self.eval()
         
         loss_function = self.loss_function()
