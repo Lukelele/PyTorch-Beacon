@@ -122,12 +122,12 @@ class Module(torch.nn.Module):
         return loss.item()
 
     
-    def fit_tensor(self, x: torch.Tensor, y: torch.Tensor, epochs=10):
+    def fit_tensor(self, X: torch.Tensor, y: torch.Tensor, epochs=10):
         """
         Trains the model on the specified input and target tensors for the specified number of epochs.
 
         Args:
-        - x: The input tensor to use for training the model.
+        - X: The input tensor to use for training the model.
         - y: The target tensor to use for training the model.
         - epochs: The number of epochs to train the model for. Default is 10.
 
@@ -135,7 +135,7 @@ class Module(torch.nn.Module):
         - None
         """
         self.to(self.device)
-        x, y = x.to(self.device), y.to(self.device)
+        X, y = X.to(self.device), y.to(self.device)
         
         loss_function = self.loss_function()
         optimiser = self.optimiser(self.parameters(), self.learning_rate)
@@ -145,7 +145,7 @@ class Module(torch.nn.Module):
         self.train()
 
         for epoch in tqdm(range(epochs)):
-            y_pred = self(x).squeeze()
+            y_pred = self(X).squeeze()
             loss = loss_function(y_pred, y)
 
             optimiser.zero_grad()
@@ -157,25 +157,25 @@ class Module(torch.nn.Module):
         return losses
     
     
-    def evaluate_tensor(self, x: torch.Tensor, y: torch.Tensor):
+    def evaluate_tensor(self, X: torch.Tensor, y: torch.Tensor):
         """
         Evaluates the model on the specified input and target tensors.
 
         Args:
-        - x: The input tensor to use for evaluating the model.
+        - X: The input tensor to use for evaluating the model.
         - y: The target tensor to use for evaluating the model.
 
         Returns:
         - Tuple of loss.
         """
         self.to(self.device)
-        x, y = x.to(self.device), y.to(self.device)
+        X, y = X.to(self.device), y.to(self.device)
         self.eval()
         
         loss_function = self.loss_function()
 
         with torch.inference_mode():
-            y_pred = self(x).squeeze()
+            y_pred = self(X).squeeze()
             loss = loss_function(y_pred, y)
 
         return loss.item()
