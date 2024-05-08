@@ -1,7 +1,6 @@
 import numpy as np
 import torch
 from tqdm.auto import tqdm
-from . import metrics
 
 
 class Module(torch.nn.Module):
@@ -16,14 +15,12 @@ class Module(torch.nn.Module):
         The optimizer to be used during training.
     learning_rate: float
         The learning rate to be used during training.
-    accuracy_function: function
-        The accuracy function to be used during training.
     device: str
         The device to be used for training.
     
     Methods:
     --------
-    compile(optimiser: torch.optim.Optimizer=torch.optim.Adam, learning_rate=0.1, loss_function=torch.nn.CrossEntropyLoss, accuracy_function=metrics.categorical_accuracy, device: str = "cpu", optimisations=False):
+    compile(optimiser: torch.optim.Optimizer=torch.optim.Adam, learning_rate=0.1, loss_function=torch.nn.CrossEntropyLoss, device: str = "cpu", optimisations=False):
         Configures the module for training.
         
     fit(dataloader: torch.utils.data.DataLoader, epochs=10):
@@ -33,15 +30,14 @@ class Module(torch.nn.Module):
         super().__init__()
         
         
-    def compile(self, optimiser: torch.optim.Optimizer=torch.optim.Adam, learning_rate=0.1, loss_function=torch.nn.CrossEntropyLoss, accuracy_function=metrics.categorical_accuracy, device: str = "cpu", optimisations=False):
+    def compile(self, optimiser: torch.optim.Optimizer=torch.optim.Adam, learning_rate=0.1, loss_function=torch.nn.CrossEntropyLoss, device: str = "cpu", optimisations=False):
         """
-        Compiles the model with the specified optimizer, learning rate, loss function, accuracy function, device and optimisations.
+        Compiles the model with the specified optimizer, learning rate, loss function, device and optimisations.
 
         Args:
         - optimiser: The optimizer to use for training the model. Default is torch.optim.Adam.
         - learning_rate: The learning rate to use for training the model. Default is 0.1.
         - loss_function: The loss function to use for training the model. Default is torch.nn.CrossEntropyLoss.
-        - accuracy_function: The accuracy function to use for training the model. Default is metrics.categorical_accuracy.
         - device: The device to use for training the model. Default is "cpu".
         - optimisations: Whether to apply optimizations to the model. Default is False.
 
@@ -51,7 +47,6 @@ class Module(torch.nn.Module):
         self.loss_function = loss_function
         self.optimiser = optimiser
         self.learning_rate = learning_rate
-        self.accuracy_function = accuracy_function
         self.device = device
         
         if optimisations == True:
@@ -73,16 +68,13 @@ class Module(torch.nn.Module):
         
         loss_function = self.loss_function()
         optimiser = self.optimiser(self.parameters(), self.learning_rate)
-        accuracy_function = self.accuracy_function
 
         losses = np.zeros(epochs)
-        accuracies = np.zeros(epochs)
 
         self.train()
 
         for epoch in tqdm(range(epochs)):
             batch_loss = 0
-            batch_accuracy = 0
 
             for (x, y) in dataloader:
                 x, y = x.to(self.device), y.to(self.device)
@@ -91,22 +83,18 @@ class Module(torch.nn.Module):
 
                 loss = loss_function(y_pred, y)
                 batch_loss += loss
-                accuracy = accuracy_function(y_pred, y)
-                batch_accuracy += accuracy
 
                 optimiser.zero_grad()
                 loss.backward()
                 optimiser.step()
     
             epoch_loss = batch_loss / len(dataloader)
-            epoch_accuracy = batch_accuracy / len(dataloader)
             losses[epoch] = epoch_loss.item()
-            accuracies[epoch] = epoch_accuracy.item()
 
-        return (losses, accuracies)
+        return losses
 
 
-    def evaluate(self, dataloader: torch.utils.data.DataLoader):
+    def evaluate(self, dataloader: torch.utils.data.DataLoader, *metrics):
         """
         Evaluates the model on the specified dataloader.
 
@@ -114,16 +102,13 @@ class Module(torch.nn.Module):
         - dataloader: The dataloader to use for evaluating the model.
 
         Returns:
-        - Tuple of loss and accuracy.
         """
         self.to(self.device)
         self.eval()
         
         loss_function = self.loss_function()
-        accuracy_function = self.accuracy_function
 
         loss = 0
-        accuracy = 0
 
         with torch.inference_mode():
             loss = 0
@@ -131,12 +116,67 @@ class Module(torch.nn.Module):
                 x, y = x.to(self.device), y.to(self.device)
                 y_pred = self(x)
                 loss += loss_function(y_pred, y)
-                accuracy += accuracy_function(y_pred, y)
 
             loss /= len(dataloader)
-            accuracy /= len(dataloader)
 
-        return loss.item(), accuracy.item()
+        return loss.item()
+
+    
+    def fit_tensor(self, x: torch.Tensor, y: torch.Tensor, epochs=10):
+        """
+        Trains the model on the specified input and target tensors for the specified number of epochs.
+
+        Args:
+        - x: The input tensor to use for training the model.
+        - y: The target tensor to use for training the model.
+        - epochs: The number of epochs to train the model for. Default is 10.
+
+        Returns:
+        - None
+        """
+        self.to(self.device)
+        
+        loss_function = self.loss_function()
+        optimiser = self.optimiser(self.parameters(), self.learning_rate)
+
+        losses = np.zeros(epochs)
+
+        self.train()
+
+        for epoch in tqdm(range(epochs)):
+            y_pred = self(x).squeeze()
+            loss = loss_function(y_pred, y)
+
+            optimiser.zero_grad()
+            loss.backward()
+            optimiser.step()
+
+            losses[epoch] = loss.item()
+
+        return losses
+    
+    
+    def evaluate_tensor(self, x: torch.Tensor, y: torch.Tensor):
+        """
+        Evaluates the model on the specified input and target tensors.
+
+        Args:
+        - x: The input tensor to use for evaluating the model.
+        - y: The target tensor to use for evaluating the model.
+
+        Returns:
+        - Tuple of loss.
+        """
+        self.to(self.device)
+        self.eval()
+        
+        loss_function = self.loss_function()
+
+        with torch.inference_mode():
+            y_pred = self(x).squeeze()
+            loss = loss_function(y_pred, y)
+
+        return loss.item()
     
     
     def predict(self, inputs: torch.Tensor):
