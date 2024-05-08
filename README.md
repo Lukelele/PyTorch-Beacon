@@ -4,7 +4,7 @@
 PyTorch-Beacon
 --------------
 
-A lightweight wrapper library for PyTorch with the purpose of simplifying training and testing models. Designed to function much like PyTorch, but replacing time consuming and repetitive tasks such as writing training and evaluating loops with one line 
+A lightweight wrapper library for PyTorch with the purpose of simplifying training and testing models. Designed to mimic the standard PyTorch syntax, but replaces time consuming and repetitive tasks such as writing training and evaluating loops with one line code.
 
 Installation
 ------------
