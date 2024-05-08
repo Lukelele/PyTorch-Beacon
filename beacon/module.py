@@ -20,7 +20,7 @@ class Module(torch.nn.Module):
     
     Methods:
     --------
-    compile(optimiser: torch.optim.Optimizer=torch.optim.Adam, learning_rate=0.1, loss_function=torch.nn.CrossEntropyLoss, device: str = "cpu", optimisations=False):
+    compile(loss_function=torch.nn.CrossEntropyLoss, optimiser=torch.optim.Adam, learning_rate=0.1, device: str = "cpu", optimisations=False):
         Configures the module for training.
         
     fit(dataloader: torch.utils.data.DataLoader, epochs=10):
@@ -30,14 +30,14 @@ class Module(torch.nn.Module):
         super().__init__()
         
         
-    def compile(self, optimiser: torch.optim.Optimizer=torch.optim.Adam, learning_rate=0.1, loss_function=torch.nn.CrossEntropyLoss, device: str = "cpu", optimisations=False):
+    def compile(self, loss_function=torch.nn.CrossEntropyLoss, optimiser=torch.optim.Adam, learning_rate=0.1, device: str = "cpu", optimisations=False):
         """
         Compiles the model with the specified optimizer, learning rate, loss function, device and optimisations.
 
         Args:
+        - loss_function: The loss function to use for training the model. Default is torch.nn.CrossEntropyLoss.
         - optimiser: The optimizer to use for training the model. Default is torch.optim.Adam.
         - learning_rate: The learning rate to use for training the model. Default is 0.1.
-        - loss_function: The loss function to use for training the model. Default is torch.nn.CrossEntropyLoss.
         - device: The device to use for training the model. Default is "cpu".
         - optimisations: Whether to apply optimizations to the model. Default is False.
 
