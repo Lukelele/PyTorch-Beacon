@@ -4,8 +4,10 @@
 PyTorch-Beacon
 --------------
 
-A lightweight library with the purpose of simplifying training and testing models in PyTorch.\
-Github Link: https://github.com/Lukelele/PyTorch-Beacon
+A lightweight wrapper library for PyTorch with the purpose of simplifying training and testing models.\
+
+Installation
+------------
+```pip install pytorch-beacon```
 
 
-Installation: pip install pytorch-beacon
