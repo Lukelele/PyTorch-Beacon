@@ -15,7 +15,7 @@ Getting Started
 
 We will build a simple neural network which learns to solve the XOR problem.
 
-```
+```python
 # Required imports
 import torch
 import beacon
@@ -26,7 +26,7 @@ X = torch.randint(0, 2, (1000, 2)).float()
 y = torch.logical_xor(X[:, 0] > 0.5, X[:, 1] > 0.5).float()
 ```
 
-```
+```python
 # Create a simple neural network using beacon.Module
 class XORNet(beacon.Module):
     def __init__(self):
@@ -50,13 +50,13 @@ model.compile(loss_function=torch.nn.BCELoss, optimiser=torch.optim.Adam, learni
 model.fit_tensor(X, y, epochs=2000)
 ```
 
-```
+```python
 # Evaluate the model for the loss
 model.evaluate_tensor(X, y)
 ```
 
 
-```
+```python
 # Predict the XOR outcomes using the trained model
 model.predict(torch.tensor([1, 0]).float())
 ```
