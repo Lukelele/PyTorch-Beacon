@@ -44,7 +44,7 @@ class XORNet(beacon.Module):
 model = XORNet()
 
 # Compile the model, use CPU as the device, specify device="cuda" to use GPU
-model.compile(optimiser=torch.optim.Adam, loss_function=torch.nn.BCELoss, learning_rate=0.03, device="cpu")
+model.compile(loss_function=torch.nn.BCELoss, optimiser=torch.optim.Adam, learning_rate=0.03, device="cpu")
 
 # Train the model
 model.fit_tensor(X, y, epochs=2000)
@@ -53,7 +53,10 @@ model.fit_tensor(X, y, epochs=2000)
 ```
 # Evaluate the model for the loss
 model.evaluate_tensor(X, y)
+```
 
+
+```
 # Predict the XOR outcomes using the trained model
 model.predict(torch.tensor([1, 0]).float())
 ```
