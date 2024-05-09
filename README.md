@@ -1,5 +1,6 @@
 
-![beacon](https://github.com/Lukelele/PyTorch-Beacon/assets/44749665/3e1a344e-e506-40b3-8dcc-2b7a51fb00c1)
+![beacon](https://github.com/Lukelele/PyTorch-Beacon/assets/44749665/3cd4be24-2bcb-4b91-acef-9dee011d66ab)
+
 
 PyTorch-Beacon
 --------------
