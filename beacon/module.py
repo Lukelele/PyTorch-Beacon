@@ -5,7 +5,7 @@ from tqdm.auto import tqdm
 
 class Module(torch.nn.Module):
     """
-    A base class for creating neural network modules in PyTorch.
+    A base class for creating neural network modules in PyTorch-Beacon. Inherits from the base PyTorch Module class, and adds additional functionalities.
     
     Attributes:
     -----------
@@ -51,6 +51,9 @@ class Module(torch.nn.Module):
         
         if optimisations == True:
             self = torch.compile(self)
+
+        self.loss_function = self.loss_function()
+        self.optimiser = self.optimiser(self.parameters(), self.learning_rate)
             
             
     def fit(self, dataloader: torch.utils.data.DataLoader, epochs=10):
@@ -65,9 +68,6 @@ class Module(torch.nn.Module):
         - None
         """
         self.to(self.device)
-        
-        loss_function = self.loss_function()
-        optimiser = self.optimiser(self.parameters(), self.learning_rate)
 
         losses = np.zeros(epochs)
 
@@ -81,12 +81,12 @@ class Module(torch.nn.Module):
 
                 y_pred = self(x)
 
-                loss = loss_function(y_pred, y)
+                loss = self.loss_function(y_pred, y)
                 batch_loss += loss
 
-                optimiser.zero_grad()
+                self.optimiser.zero_grad()
                 loss.backward()
-                optimiser.step()
+                self.optimiser.step()
     
             epoch_loss = batch_loss / len(dataloader)
             losses[epoch] = epoch_loss.item()
@@ -105,8 +105,6 @@ class Module(torch.nn.Module):
         """
         self.to(self.device)
         self.eval()
-        
-        loss_function = self.loss_function()
 
         loss = 0
 
@@ -115,7 +113,7 @@ class Module(torch.nn.Module):
             for (x, y) in dataloader:
                 x, y = x.to(self.device), y.to(self.device)
                 y_pred = self(x)
-                loss += loss_function(y_pred, y)
+                loss += self.loss_function(y_pred, y)
 
             loss /= len(dataloader)
 
@@ -136,9 +134,6 @@ class Module(torch.nn.Module):
         """
         self.to(self.device)
         X, y = X.to(self.device), y.to(self.device)
-        
-        loss_function = self.loss_function()
-        optimiser = self.optimiser(self.parameters(), self.learning_rate)
 
         losses = np.zeros(epochs)
 
@@ -146,11 +141,11 @@ class Module(torch.nn.Module):
 
         for epoch in tqdm(range(epochs)):
             y_pred = self(X).squeeze()
-            loss = loss_function(y_pred, y)
+            loss = self.loss_function(y_pred, y)
 
-            optimiser.zero_grad()
+            self.optimiser.zero_grad()
             loss.backward()
-            optimiser.step()
+            self.optimiser.step()
 
             losses[epoch] = loss.item()
 
@@ -171,12 +166,10 @@ class Module(torch.nn.Module):
         self.to(self.device)
         X, y = X.to(self.device), y.to(self.device)
         self.eval()
-        
-        loss_function = self.loss_function()
 
         with torch.inference_mode():
             y_pred = self(X).squeeze()
-            loss = loss_function(y_pred, y)
+            loss = self.loss_function(y_pred, y)
 
         return loss.item()
     
