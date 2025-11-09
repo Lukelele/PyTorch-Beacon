@@ -1,7 +1,4 @@
 
-![beacon](https://github.com/Lukelele/PyTorch-Beacon/assets/44749665/3cd4be24-2bcb-4b91-acef-9dee011d66ab)
-
-
 PyTorch-Beacon
 --------------
 
